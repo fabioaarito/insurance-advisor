@@ -24,10 +24,12 @@ function buildInsuranceContext(policies: InsurancePolicy[]): string {
   }
 
   const sections = policies.map((p, i) => {
+    const premiumLine = p.monthlyPremium != null
+      ? `- Prémio Mensal: ${p.monthlyPremium.toFixed(2)} EUR\n- Prémio Anual: ${(p.annualPremium ?? p.monthlyPremium * 12).toFixed(2)} EUR`
+      : "- Prémio: Valor não definido pelo utilizador";
     return `
 ### Seguro ${i + 1}: ${p.insurerName} - ${p.policyType}
-- Prémio Mensal: ${p.monthlyPremium.toFixed(2)} EUR
-- Prémio Anual: ${p.annualPremium.toFixed(2)} EUR
+${premiumLine}
 - Coberturas: ${p.coverages.length > 0 ? p.coverages.join(", ") : "Não especificadas"}
 - Exclusões: ${p.exclusions.length > 0 ? p.exclusions.join(", ") : "Não especificadas"}
     `.trim();

@@ -15,7 +15,11 @@ export function WelcomeBanner({ policies, onUploadClick }: WelcomeBannerProps) {
   const firstName =
     user?.displayName?.split(" ")[0] ?? user?.email?.split("@")[0] ?? "";
 
-  const totalMonthly = policies.reduce((s, p) => s + p.monthlyPremium, 0);
+  const policiesWithPremium = policies.filter((p) => p.monthlyPremium != null);
+  const totalMonthly = policiesWithPremium.reduce(
+    (s, p) => s + (p.monthlyPremium ?? 0),
+    0
+  );
 
   if (policies.length === 0) return null;
 
@@ -34,8 +38,13 @@ export function WelcomeBanner({ policies, onUploadClick }: WelcomeBannerProps) {
             Olá, {firstName}!
           </h1>
           <p className="text-white/80 text-sm md:text-base">
-            Tens <span className="font-semibold text-white">{policies.length} seguro{policies.length !== 1 ? "s" : ""}</span> ativo{policies.length !== 1 ? "s" : ""} com um investimento total de{" "}
-            <span className="font-semibold text-white">{totalMonthly.toFixed(2)} €/mês</span>.
+            Tens <span className="font-semibold text-white">{policies.length} seguro{policies.length !== 1 ? "s" : ""}</span> ativo{policies.length !== 1 ? "s" : ""}
+            {policiesWithPremium.length > 0 ? (
+              <> com um investimento total de{" "}
+                <span className="font-semibold text-white">{totalMonthly.toFixed(2)} €/mês</span></>
+              ) : (
+                <>. {policiesWithoutPremiumCount(policies) > 0 && "Alguns ainda não têm valor definido."}</>
+              )}.
           </p>
         </div>
 
@@ -60,4 +69,8 @@ export function WelcomeBanner({ policies, onUploadClick }: WelcomeBannerProps) {
       </div>
     </div>
   );
+}
+
+function policiesWithoutPremiumCount(policies: InsurancePolicy[]): number {
+  return policies.filter((p) => p.monthlyPremium == null).length;
 }

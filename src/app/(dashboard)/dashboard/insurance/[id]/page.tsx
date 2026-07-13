@@ -4,9 +4,19 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { getPolicyById } from "@/app/actions/data";
+import { updatePolicyPremium, deletePolicy } from "@/app/actions/insurance";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
@@ -22,7 +32,13 @@ import {
   Heart,
   Briefcase,
   ExternalLink,
+  Pencil,
+  Check,
+  X,
+  CircleDollarSign,
+  Trash2,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { InsurancePolicy } from "@/types";
 
 const policyTypeIcons: Record<string, string> = {
@@ -62,6 +78,11 @@ export default function InsuranceDetailPage() {
 
   const [policy, setPolicy] = useState<InsurancePolicy | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editingPremium, setEditingPremium] = useState(false);
+  const [premiumInput, setPremiumInput] = useState("");
+  const [savingPremium, setSavingPremium] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchPolicy = useCallback(async () => {
     if (!user || !policyId) return;
@@ -80,6 +101,65 @@ export default function InsuranceDetailPage() {
   useEffect(() => {
     fetchPolicy();
   }, [fetchPolicy]);
+
+  async function handleSavePremium() {
+    if (!user || !policy) return;
+    const value = parseFloat(premiumInput.replace(",", "."));
+    if (isNaN(value) || value < 0) {
+      toast.error("Por favor, insere um valor válido.");
+      return;
+    }
+
+    setSavingPremium(true);
+    try {
+      const result = await updatePolicyPremium(user.uid, policy.id, value);
+      if (result.success) {
+        setPolicy((prev) =>
+          prev
+            ? {
+                ...prev,
+                monthlyPremium: value,
+                annualPremium: Math.round(value * 12 * 100) / 100,
+              }
+            : prev
+        );
+        setEditingPremium(false);
+        toast.success("Prémio atualizado com sucesso!");
+      } else {
+        toast.error(result.error || "Erro ao atualizar o prémio.");
+      }
+    } finally {
+      setSavingPremium(false);
+    }
+  }
+
+  function startEditingPremium() {
+    setPremiumInput(policy?.monthlyPremium?.toString() ?? "");
+    setEditingPremium(true);
+  }
+
+  function cancelEditingPremium() {
+    setEditingPremium(false);
+    setPremiumInput("");
+  }
+
+  async function handleDelete() {
+    if (!user || !policy) return;
+    setDeleting(true);
+    try {
+      const result = await deletePolicy(user.uid, policy.id);
+      if (result.success) {
+        toast.success("Seguro apagado com sucesso!");
+        router.push("/dashboard");
+      } else {
+        toast.error(result.error || "Erro ao apagar o seguro.");
+        setDeleting(false);
+        setDeleteOpen(false);
+      }
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -114,6 +194,8 @@ export default function InsuranceDetailPage() {
     );
   }
 
+  const hasPremium = policy.monthlyPremium != null;
+
   return (
     <div className="container mx-auto space-y-6 px-4 py-8 md:px-6 animate-fade-in">
       <div className="flex items-center gap-4">
@@ -125,17 +207,25 @@ export default function InsuranceDetailPage() {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="flex items-center gap-3">
-          <div className="rounded-xl gradient-brand p-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="rounded-xl gradient-brand p-3 shrink-0">
             <PolicyTypeIconComponent type={policy.policyType} />
           </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight md:text-3xl truncate">
               {policy.insurerName}
             </h1>
             <p className="text-muted-foreground">{policy.policyType}</p>
           </div>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
+          onClick={() => setDeleteOpen(true)}
+        >
+          <Trash2 className="h-5 w-5" />
+        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-5">
@@ -158,14 +248,92 @@ export default function InsuranceDetailPage() {
                 <Badge variant="secondary">{policy.policyType}</Badge>
               </div>
               <Separator />
-              <div className="rounded-xl gradient-brand-subtle p-4 text-center">
-                <p className="text-sm text-muted-foreground mb-1">Prémio mensal</p>
-                <p className="text-3xl font-bold tracking-tight">
-                  {policy.monthlyPremium.toFixed(2)} <span className="text-lg text-muted-foreground">€</span>
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {policy.annualPremium.toFixed(2)} € por ano
-                </p>
+              <div className="rounded-xl gradient-brand-subtle p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm text-muted-foreground">Prémio mensal</p>
+                  {!editingPremium && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={startEditingPremium}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+
+                {editingPremium ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={premiumInput}
+                        onChange={(e) => setPremiumInput(e.target.value)}
+                        placeholder="Ex: 45.50"
+                        className="text-2xl font-bold h-auto py-2"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleSavePremium();
+                          if (e.key === "Escape") cancelEditingPremium();
+                        }}
+                      />
+                      <span className="text-lg font-semibold text-muted-foreground">€</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={handleSavePremium}
+                        disabled={savingPremium}
+                        className="gap-1.5"
+                      >
+                        {savingPremium ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Check className="h-3.5 w-3.5" />
+                        )}
+                        Guardar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={cancelEditingPremium}
+                        disabled={savingPremium}
+                        className="gap-1.5"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                ) : hasPremium ? (
+                  <div className="text-center">
+                    <p className="text-3xl font-bold tracking-tight">
+                      {policy.monthlyPremium!.toFixed(2)} <span className="text-lg text-muted-foreground">€</span>
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {policy.annualPremium!.toFixed(2)} € por ano
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-2">
+                    <CircleDollarSign className="h-8 w-8 text-muted-foreground mx-auto" />
+                    <p className="text-sm text-muted-foreground">
+                      O valor do prémio não foi extraído do documento.
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={startEditingPremium}
+                      className="gap-1.5"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Adicionar prémio mensal
+                    </Button>
+                  </div>
+                )}
               </div>
               <Separator />
               <div className="flex items-center justify-between">
@@ -285,6 +453,43 @@ export default function InsuranceDetailPage() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-5 w-5" />
+              Apagar seguro
+            </DialogTitle>
+            <DialogDescription>
+              Tem a certeza que queres apagar o seguro <strong>{policy.insurerName}</strong> ({policy.policyType})?
+              Esta ação não pode ser desfeita.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteOpen(false)}
+              disabled={deleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="gap-1.5"
+            >
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Apagar seguro
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

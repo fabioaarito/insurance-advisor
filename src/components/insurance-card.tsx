@@ -9,6 +9,7 @@ import {
   Shield,
   ArrowRight,
   CheckCircle2,
+  CircleDollarSign,
 } from "lucide-react";
 import type { InsurancePolicy } from "@/types";
 
@@ -65,6 +66,7 @@ interface InsuranceCardProps {
 
 export function InsuranceCard({ policy }: InsuranceCardProps) {
   const coverageCount = policy.coverages.length;
+  const hasPremium = policy.monthlyPremium != null;
 
   return (
     <Link href={`/dashboard/insurance/${policy.id}`}>
@@ -87,13 +89,23 @@ export function InsuranceCard({ policy }: InsuranceCardProps) {
             </div>
 
             <div className="flex items-end justify-between">
-              <div>
-                <span className="text-3xl font-bold tracking-tight">
-                  {policy.monthlyPremium.toFixed(2)}
-                </span>
-                <span className="text-lg font-semibold text-muted-foreground ml-1">€</span>
-                <p className="text-xs text-muted-foreground mt-0.5">por mês</p>
-              </div>
+              {hasPremium ? (
+                <div>
+                  <span className="text-3xl font-bold tracking-tight">
+                    {policy.monthlyPremium!.toFixed(2)}
+                  </span>
+                  <span className="text-lg font-semibold text-muted-foreground ml-1">€</span>
+                  <p className="text-xs text-muted-foreground mt-0.5">por mês</p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <CircleDollarSign className="h-5 w-5" />
+                  <div>
+                    <p className="text-sm font-medium">Prémio não definido</p>
+                    <p className="text-xs">Clica para adicionar</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {coverageCount > 0 && (

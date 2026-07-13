@@ -4,6 +4,8 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useAuth } from "@/hooks/use-auth";
 import { uploadAndExtractInsurance } from "@/app/actions/insurance";
+import { storage } from "@/lib/firebase";
+import { ref, uploadBytes } from "firebase/storage";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -41,15 +43,15 @@ export function UploadZone({
       setStatus("uploading");
 
       try {
-        const arrayBuffer = await file.arrayBuffer();
-        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        const storagePath = `insurances/${user.uid}/${Date.now()}_${file.name}`;
+        const storageRef = ref(storage, storagePath);
+        await uploadBytes(storageRef, file, { contentType: file.type });
 
         setStatus("extracting");
         const result = await uploadAndExtractInsurance(
           user.uid,
-          base64,
+          storagePath,
           file.name,
-          file.type
         );
 
         if (result.success) {
@@ -111,8 +113,8 @@ export function UploadZone({
             Carregar seguro
           </DialogTitle>
           <DialogDescription>
-            Arrasta ou seleciona uma Ficha de Informação Normalizada (FIN) em
-            formato PDF. A IA vai extrair todos os dados automaticamente.
+            Carrega qualquer documento de seguro em formato PDF: apólice, FIN,
+            condições gerais, renovação, etc. A IA vai extrair os dados automaticamente.
           </DialogDescription>
         </DialogHeader>
         <div
@@ -164,7 +166,7 @@ export function UploadZone({
               </div>
               <p className="text-sm font-medium">A IA está a analisar o documento...</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                A extrair seguradora, coberturas, exclusões e custos
+                A extrair seguradora, coberturas, exclusões e custos (se disponíveis)
               </p>
             </>
           )}

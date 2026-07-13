@@ -7,19 +7,27 @@ interface FinancialSummaryProps {
 }
 
 export function FinancialSummary({ policies }: FinancialSummaryProps) {
-  const totalMonthly = policies.reduce(
-    (sum, p) => sum + p.monthlyPremium,
+  const policiesWithPremium = policies.filter((p) => p.monthlyPremium != null);
+  const policiesWithoutPremium = policies.filter((p) => p.monthlyPremium == null);
+
+  const totalMonthly = policiesWithPremium.reduce(
+    (sum, p) => sum + (p.monthlyPremium ?? 0),
     0
   );
-  const totalAnnual = policies.reduce((sum, p) => sum + p.annualPremium, 0);
+  const totalAnnual = policiesWithPremium.reduce(
+    (sum, p) => sum + (p.annualPremium ?? 0),
+    0
+  );
   const averageMonthly =
-    policies.length > 0 ? totalMonthly / policies.length : 0;
+    policiesWithPremium.length > 0 ? totalMonthly / policiesWithPremium.length : 0;
 
   const stats = [
     {
       title: "Investes por mês",
-      value: `${totalMonthly.toFixed(2)} €`,
-      description: `Soma dos ${policies.length} prémios mensais`,
+      value: policiesWithPremium.length > 0 ? `${totalMonthly.toFixed(2)} €` : "N/A",
+      description: policiesWithoutPremium.length > 0
+        ? `${policiesWithPremium.length} de ${policies.length} seguros com valor definido`
+        : `Soma dos ${policies.length} prémios mensais`,
       icon: DollarSign,
       iconBg: "bg-emerald-100",
       iconColor: "text-emerald-600",
@@ -27,7 +35,7 @@ export function FinancialSummary({ policies }: FinancialSummaryProps) {
     },
     {
       title: "Investimento anual",
-      value: `${totalAnnual.toFixed(2)} €`,
+      value: policiesWithPremium.length > 0 ? `${totalAnnual.toFixed(2)} €` : "N/A",
       description: "Custo total estimado por ano",
       icon: TrendingUp,
       iconBg: "bg-indigo-100",
@@ -36,7 +44,7 @@ export function FinancialSummary({ policies }: FinancialSummaryProps) {
     },
     {
       title: "Prémio médio",
-      value: `${averageMonthly.toFixed(2)} €`,
+      value: policiesWithPremium.length > 0 ? `${averageMonthly.toFixed(2)} €` : "N/A",
       description: "Custo médio por apólice",
       icon: Shield,
       iconBg: "bg-slate-100",
@@ -45,7 +53,7 @@ export function FinancialSummary({ policies }: FinancialSummaryProps) {
     },
     {
       title: "Poupança potencial",
-      value: `${(totalAnnual * 0.1).toFixed(2)} €`,
+      value: policiesWithPremium.length > 0 ? `${(totalAnnual * 0.1).toFixed(2)} €` : "N/A",
       description: "Estimativa com otimização",
       icon: PiggyBank,
       iconBg: "bg-amber-100",

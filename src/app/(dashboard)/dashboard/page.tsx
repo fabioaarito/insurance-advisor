@@ -97,11 +97,12 @@ export default function DashboardPage() {
         <EmptyState
           icon={Shield}
           title="Ainda não tens seguros adicionados"
-          description="Carrega a tua primeira Ficha de Informação Normalizada (FIN) para a IA extrair todos os dados automaticamente."
+          description="Carrega qualquer documento de seguro em PDF e a IA extrai os dados automaticamente."
           steps={[
             {
               icon: FileText,
-              label: "Carrega a FIN",
+              label: "Carrega o documento",
+
               description: "Arrasta ou seleciona o teu PDF",
             },
             {

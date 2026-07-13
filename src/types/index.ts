@@ -13,8 +13,8 @@ export interface InsurancePolicy {
   storagePath: string;
   insurerName: string;
   policyType: string;
-  monthlyPremium: number;
-  annualPremium: number;
+  monthlyPremium: number | null;
+  annualPremium: number | null;
   currency: string;
   coverages: string[];
   exclusions: string[];
@@ -44,8 +44,8 @@ export interface ChatSession {
 export interface ExtractedInsuranceData {
   insurerName: string;
   policyType: string;
-  monthlyPremium: number;
-  annualPremium: number;
+  monthlyPremium: number | null;
+  annualPremium: number | null;
   currency: string;
   coverages: string[];
   exclusions: string[];
