@@ -41,14 +41,12 @@ export async function getChatMessages(
   userId: string,
   policyId?: string,
   limit = 30,
-  before?: string
 ): Promise<{ messages: Array<{ id: string; role: string; content: string; timestamp: string }>; hasMore: boolean }> {
   const adminDb = getAdminDb();
-  let query = adminDb
+  let query: FirebaseFirestore.Query = adminDb
     .collection("users")
     .doc(userId)
-    .collection("chats")
-    .orderBy("timestamp", "desc");
+    .collection("chats");
 
   if (policyId) {
     query = query.where("policyId", "==", policyId);
@@ -56,22 +54,16 @@ export async function getChatMessages(
     query = query.where("policyId", "==", null);
   }
 
-  if (before) {
-    const beforeDoc = await adminDb
-      .collection("users")
-      .doc(userId)
-      .collection("chats")
-      .doc(before)
-      .get();
-    if (beforeDoc.exists) {
-      query = query.startAfter(beforeDoc);
-    }
-  }
+  const snapshot = await query.get();
+  const sorted = snapshot.docs
+    .sort((a, b) => {
+      const tsA = a.data().timestamp as string;
+      const tsB = b.data().timestamp as string;
+      return tsB.localeCompare(tsA);
+    });
 
-  const snapshot = await query.limit(limit + 1).get();
-  const docs = snapshot.docs;
-  const hasMore = docs.length > limit;
-  const messages = docs.slice(0, limit).reverse().map((doc) => ({
+  const hasMore = sorted.length > limit;
+  const messages = sorted.slice(0, limit).reverse().map((doc) => ({
     id: doc.id,
     ...doc.data(),
   })) as Array<{ id: string; role: string; content: string; timestamp: string }>;
