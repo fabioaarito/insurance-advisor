@@ -37,7 +37,7 @@ export function ChatWindow({ initialPolicyId }: ChatWindowProps) {
   const selectedPolicy = policies.find((p) => p.id === selectedPolicyId);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <div className="border-b bg-muted/30 px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 min-w-0">

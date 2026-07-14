@@ -77,7 +77,7 @@ export function ChatContent({ policyId, policies }: ChatContentProps) {
 
   return (
     <>
-      <ScrollArea className="flex-1 px-4">
+      <ScrollArea className="flex-1 min-h-0 px-4">
         <div className="space-y-4 py-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-center animate-fade-in">
