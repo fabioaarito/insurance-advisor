@@ -21,13 +21,13 @@ export function ChatMessageBubble({ role, content }: ChatMessageBubbleProps) {
         </Avatar>
       )}
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+        className={`max-w-[80%] min-w-0 rounded-2xl px-4 py-3 text-sm leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground rounded-br-md"
             : "bg-muted border-l-2 border-primary/30 rounded-bl-md"
         }`}
       >
-        <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+        <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap break-words">
           {content}
         </div>
       </div>

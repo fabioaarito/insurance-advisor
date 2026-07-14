@@ -88,13 +88,15 @@ export function InsuranceCard({ policy }: InsuranceCardProps) {
               <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0.5" />
             </div>
 
-            <div className="flex items-end justify-between">
+            <div className="flex items-end justify-between gap-2">
               {hasPremium ? (
-                <div>
-                  <span className="text-3xl font-bold tracking-tight">
-                    {policy.monthlyPremium!.toFixed(2)}
-                  </span>
-                  <span className="text-lg font-semibold text-muted-foreground ml-1">€</span>
+                <div className="min-w-0">
+                  <div className="flex items-baseline">
+                    <span className="text-2xl font-bold tracking-tight sm:text-3xl truncate">
+                      {policy.monthlyPremium!.toFixed(2)}
+                    </span>
+                    <span className="text-lg font-semibold text-muted-foreground ml-1">€</span>
+                  </div>
                   <p className="text-xs text-muted-foreground mt-0.5">por mês</p>
                 </div>
               ) : (
@@ -125,7 +127,7 @@ export function InsuranceCard({ policy }: InsuranceCardProps) {
                     <Badge
                       key={coverage}
                       variant="secondary"
-                      className="text-xs font-normal"
+                      className="text-xs font-normal break-words"
                     >
                       {coverage}
                     </Badge>

@@ -74,19 +74,19 @@ export function FinancialSummary({ policies }: FinancialSummaryProps) {
             className={`shadow-card hover:shadow-card-hover transition-shadow duration-200 border-l-4 ${stat.borderColor}`}
           >
             <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1 min-w-0">
                   <p className="text-sm text-muted-foreground font-medium">
                     {stat.title}
                   </p>
-                  <p className="text-2xl font-bold tracking-tight">
+                  <p className="text-xl font-bold tracking-tight sm:text-2xl truncate">
                     {stat.value}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {stat.description}
                   </p>
                 </div>
-                <div className={`rounded-xl p-2.5 ${stat.iconBg}`}>
+                <div className={`rounded-xl p-2.5 ${stat.iconBg} shrink-0`}>
                   <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
                 </div>
               </div>

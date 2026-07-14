@@ -41,13 +41,13 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-        <div className="flex items-center gap-8">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6 overflow-hidden">
+        <div className="flex items-center gap-6 md:gap-8 min-w-0">
+          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-brand">
               <Shield className="h-4.5 w-4.5 text-white" />
             </div>
-            <span className="text-lg font-semibold text-gradient-brand">
+            <span className="text-lg font-semibold text-gradient-brand hidden sm:inline">
               Insurance Advisor
             </span>
           </Link>

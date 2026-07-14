@@ -16,7 +16,7 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed bg-muted/30 p-12 text-center animate-fade-in">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed bg-muted/30 p-6 sm:p-12 text-center animate-fade-in">
       <div className="rounded-2xl gradient-brand-subtle p-5">
         <Icon className="h-10 w-10 text-primary" />
       </div>

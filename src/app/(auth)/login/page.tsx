@@ -11,6 +11,12 @@ import {
   Sparkles,
 } from "lucide-react";
 
+function trackLoginClick() {
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    window.gtag("event", "login_button_click", { location: "login_page" });
+  }
+}
+
 export default function LoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
   const router = useRouter();
@@ -65,7 +71,7 @@ export default function LoginPage() {
 
           <div className="rounded-2xl border bg-card p-8 shadow-card space-y-6">
             <Button
-              onClick={signInWithGoogle}
+              onClick={() => { trackLoginClick(); signInWithGoogle(); }}
               size="lg"
               className="w-full gap-3 h-12 text-base"
             >

@@ -39,6 +39,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { trackPremiumEdit } from "@/lib/analytics";
 import type { InsurancePolicy } from "@/types";
 
 const policyTypeIcons: Record<string, string> = {
@@ -124,6 +125,7 @@ export default function InsuranceDetailPage() {
             : prev
         );
         setEditingPremium(false);
+        trackPremiumEdit(policy.insurerName, value);
         toast.success("Prémio atualizado com sucesso!");
       } else {
         toast.error(result.error || "Erro ao atualizar o prémio.");
@@ -197,25 +199,25 @@ export default function InsuranceDetailPage() {
   const hasPremium = policy.monthlyPremium != null;
 
   return (
-    <div className="container mx-auto space-y-6 px-4 py-8 md:px-6 animate-fade-in">
-      <div className="flex items-center gap-4">
+    <div className="container mx-auto space-y-6 px-4 py-8 md:px-6 animate-fade-in overflow-x-hidden">
+      <div className="flex items-center gap-3 sm:gap-4">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => router.push("/dashboard")}
-          className="rounded-full"
+          className="rounded-full shrink-0"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="rounded-xl gradient-brand p-3 shrink-0">
+          <div className="rounded-xl gradient-brand p-3 shrink-0 hidden sm:block">
             <PolicyTypeIconComponent type={policy.policyType} />
           </div>
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold tracking-tight md:text-3xl truncate">
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl truncate">
               {policy.insurerName}
             </h1>
-            <p className="text-muted-foreground">{policy.policyType}</p>
+            <p className="text-sm text-muted-foreground sm:text-base">{policy.policyType}</p>
           </div>
         </div>
         <Button
@@ -230,32 +232,32 @@ export default function InsuranceDetailPage() {
 
       <div className="grid gap-6 md:grid-cols-5">
         <div className="md:col-span-2 space-y-6">
-          <Card className="shadow-card">
+          <Card className="shadow-card overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <FileText className="h-4 w-4 text-primary" />
-                Informações do seguro
+                <FileText className="h-4 w-4 text-primary shrink-0" />
+                <span className="truncate">Informações do seguro</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Seguradora</span>
-                <span className="text-sm font-medium">{policy.insurerName}</span>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-muted-foreground shrink-0">Seguradora</span>
+                <span className="text-sm font-medium text-right min-w-0 truncate">{policy.insurerName}</span>
               </div>
               <Separator />
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Tipo</span>
-                <Badge variant="secondary">{policy.policyType}</Badge>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-muted-foreground shrink-0">Tipo</span>
+                <Badge variant="secondary" className="shrink-0">{policy.policyType}</Badge>
               </div>
               <Separator />
-              <div className="rounded-xl gradient-brand-subtle p-4">
+              <div className="rounded-xl gradient-brand-subtle p-4 overflow-hidden">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-sm text-muted-foreground">Prémio mensal</p>
                   {!editingPremium && (
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7"
+                      className="h-7 w-7 shrink-0"
                       onClick={startEditingPremium}
                     >
                       <Pencil className="h-3.5 w-3.5" />
@@ -273,14 +275,14 @@ export default function InsuranceDetailPage() {
                         value={premiumInput}
                         onChange={(e) => setPremiumInput(e.target.value)}
                         placeholder="Ex: 45.50"
-                        className="text-2xl font-bold h-auto py-2"
+                        className="text-xl font-bold h-auto py-2 sm:text-2xl"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleSavePremium();
                           if (e.key === "Escape") cancelEditingPremium();
                         }}
                       />
-                      <span className="text-lg font-semibold text-muted-foreground">€</span>
+                      <span className="text-lg font-semibold text-muted-foreground shrink-0">€</span>
                     </div>
                     <div className="flex gap-2">
                       <Button
@@ -310,8 +312,8 @@ export default function InsuranceDetailPage() {
                   </div>
                 ) : hasPremium ? (
                   <div className="text-center">
-                    <p className="text-3xl font-bold tracking-tight">
-                      {policy.monthlyPremium!.toFixed(2)} <span className="text-lg text-muted-foreground">€</span>
+                    <p className="text-2xl font-bold tracking-tight sm:text-3xl">
+                      {policy.monthlyPremium!.toFixed(2)} <span className="text-base text-muted-foreground sm:text-lg">€</span>
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {policy.annualPremium!.toFixed(2)} € por ano
@@ -336,22 +338,22 @@ export default function InsuranceDetailPage() {
                 )}
               </div>
               <Separator />
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Ficheiro</span>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-muted-foreground shrink-0">Ficheiro</span>
                 <a
                   href={policy.fileURL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-sm text-primary underline-offset-4 hover:underline"
+                  className="flex items-center gap-1 text-sm text-primary underline-offset-4 hover:underline min-w-0"
                 >
-                  {policy.fileName}
-                  <ExternalLink className="h-3 w-3" />
+                  <span className="truncate">{policy.fileName}</span>
+                  <ExternalLink className="h-3 w-3 shrink-0" />
                 </a>
               </div>
               <Separator />
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Data de upload</span>
-                <span className="flex items-center gap-1.5 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-muted-foreground shrink-0">Data de upload</span>
+                <span className="flex items-center gap-1.5 text-sm shrink-0">
                   <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
                   {new Date(policy.uploadedAt).toLocaleDateString("pt-PT")}
                 </span>
@@ -361,31 +363,31 @@ export default function InsuranceDetailPage() {
         </div>
 
         <div className="md:col-span-3 space-y-6">
-          <Card className="shadow-card">
+          <Card className="shadow-card overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <div className="rounded-lg bg-emerald-100 p-1.5">
+                <div className="rounded-lg bg-emerald-100 p-1.5 shrink-0">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                 </div>
-                Coberturas
+                <span className="truncate">Coberturas</span>
                 {policy.coverages.length > 0 && (
-                  <Badge variant="secondary" className="ml-auto text-xs">
+                  <Badge variant="secondary" className="ml-auto text-xs shrink-0">
                     {policy.coverages.length}
                   </Badge>
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="overflow-hidden">
               {policy.coverages.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {policy.coverages.map((coverage) => (
                     <Badge
                       key={coverage}
                       variant="outline"
-                      className="border-emerald-200 bg-emerald-50 text-emerald-700 font-normal text-sm py-1.5 px-3"
+                      className="border-emerald-200 bg-emerald-50 text-emerald-700 font-normal text-sm py-1.5 px-3 max-w-full whitespace-normal h-auto overflow-visible"
                     >
-                      <CheckCircle2 className="h-3 w-3 mr-1.5" />
-                      {coverage}
+                      <CheckCircle2 className="h-3 w-3 mr-1.5 shrink-0" />
+                      <span className="break-words">{coverage}</span>
                     </Badge>
                   ))}
                 </div>
@@ -397,31 +399,31 @@ export default function InsuranceDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-card">
+          <Card className="shadow-card overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <div className="rounded-lg bg-red-100 p-1.5">
+                <div className="rounded-lg bg-red-100 p-1.5 shrink-0">
                   <XCircle className="h-4 w-4 text-red-600" />
                 </div>
-                Exclusões
+                <span className="truncate">Exclusões</span>
                 {policy.exclusions.length > 0 && (
-                  <Badge variant="secondary" className="ml-auto text-xs">
+                  <Badge variant="secondary" className="ml-auto text-xs shrink-0">
                     {policy.exclusions.length}
                   </Badge>
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="overflow-hidden">
               {policy.exclusions.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {policy.exclusions.map((exclusion) => (
                     <Badge
                       key={exclusion}
                       variant="outline"
-                      className="border-red-200 bg-red-50 text-red-700 font-normal text-sm py-1.5 px-3"
+                      className="border-red-200 bg-red-50 text-red-700 font-normal text-sm py-1.5 px-3 max-w-full whitespace-normal h-auto overflow-visible"
                     >
-                      <XCircle className="h-3 w-3 mr-1.5" />
-                      {exclusion}
+                      <XCircle className="h-3 w-3 mr-1.5 shrink-0" />
+                      <span className="break-words">{exclusion}</span>
                     </Badge>
                   ))}
                 </div>
@@ -434,20 +436,20 @@ export default function InsuranceDetailPage() {
           </Card>
 
           <Card className="shadow-card overflow-hidden">
-            <div className="gradient-brand p-6 text-center text-white space-y-3">
+            <div className="gradient-brand p-4 sm:p-6 text-center text-white space-y-3">
               <MessageSquare className="h-8 w-8 mx-auto" />
               <h3 className="text-lg font-semibold">Queres saber mais?</h3>
               <p className="text-white/80 text-sm max-w-sm mx-auto">
                 Conversa com a nossa IA para esclarecer dúvidas sobre este seguro em específico.
               </p>
               <Button
-                className="gap-2 bg-white text-primary hover:bg-white/90"
+                className="gap-2 bg-white text-primary hover:bg-white/90 w-full sm:w-auto"
                 onClick={() =>
                   router.push(`/dashboard/chat?policyId=${policy.id}`)
                 }
               >
-                <MessageSquare className="h-4 w-4" />
-                Conversar sobre este seguro
+                <MessageSquare className="h-4 w-4 shrink-0" />
+                <span className="truncate">Conversar sobre este seguro</span>
               </Button>
             </div>
           </Card>

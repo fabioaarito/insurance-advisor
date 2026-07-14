@@ -9,12 +9,8 @@ import { ChatMessageBubble } from "@/components/chat-message-bubble";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Send,
-  Loader2,
-  Shield,
-  MessageSquare,
-} from "lucide-react";
+import { Send, Loader2, Shield, MessageSquare } from "lucide-react";
+import { trackChatMessage } from "@/lib/analytics";
 import type { InsurancePolicy } from "@/types";
 
 interface ChatContentProps {
@@ -68,12 +64,14 @@ export function ChatContent({ policyId, policies }: ChatContentProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
+    trackChatMessage(policyId === "all" ? undefined : policyId);
     sendMessage({ text: inputValue });
     setInputValue("");
   }
 
   function handleSuggestion(suggestion: string) {
     if (isLoading) return;
+    trackChatMessage(policyId === "all" ? undefined : policyId);
     sendMessage({ text: suggestion });
   }
 
@@ -102,7 +100,7 @@ export function ChatContent({ policyId, policies }: ChatContentProps) {
               </p>
 
               {!hasNoPolicies && (
-                <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-md">
+                <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-md px-2">
                   {suggestions.map((s) => (
                     <button
                       key={s}

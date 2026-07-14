@@ -8,6 +8,7 @@ import {
   type User as FirebaseUser,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
+import { trackLogin } from "@/lib/analytics";
 import type { User } from "@/types";
 
 interface AuthContextType {
@@ -51,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signInWithGoogle() {
     await signInWithPopup(auth, googleProvider);
+    trackLogin();
   }
 
   async function signOut() {

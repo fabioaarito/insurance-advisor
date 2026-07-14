@@ -17,6 +17,7 @@ import {
 import { Upload, Loader2, CheckCircle2, XCircle, FileText, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { trackPolicyUpload } from "@/lib/analytics";
 
 interface UploadZoneProps {
   open: boolean;
@@ -56,6 +57,7 @@ export function UploadZone({
 
         if (result.success) {
           setStatus("success");
+          trackPolicyUpload(result.policy?.insurerName ?? "unknown");
           toast.success("Seguro adicionado com sucesso!", {
             description: `${result.policy?.insurerName} - ${result.policy?.policyType}`,
           });

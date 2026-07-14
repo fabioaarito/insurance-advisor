@@ -53,7 +53,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-8 px-4 py-8 md:px-6">
+    <div className="container mx-auto space-y-8 px-4 py-8 md:px-6 overflow-hidden">
       <div className="flex items-center justify-between animate-fade-in">
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">

@@ -10,7 +10,7 @@ function ChatPageContent() {
   const policyId = searchParams.get("policyId") || undefined;
 
   return (
-    <div className="container mx-auto h-[calc(100vh-4rem)] max-w-4xl px-4 py-4 md:px-6">
+    <div className="container mx-auto h-[calc(100vh-4rem)] max-w-4xl px-4 py-4 md:px-6 overflow-hidden">
       <ChatWindow initialPolicyId={policyId} />
     </div>
   );

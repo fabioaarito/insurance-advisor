@@ -20,6 +20,12 @@ import {
   Star,
 } from "lucide-react";
 
+function trackLoginClick() {
+  if (typeof window !== "undefined" && typeof window.gtag === "function") {
+    window.gtag("event", "login_button_click", { location: "landing_page" });
+  }
+}
+
 const features = [
   {
     icon: FileText,
@@ -137,7 +143,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-2.5">
@@ -152,14 +158,14 @@ export default function LandingPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => router.push("/login")}
+              onClick={() => { trackLoginClick(); router.push("/login"); }}
             >
               Entrar
             </Button>
             <Button
               size="sm"
               className="gap-2"
-              onClick={() => router.push("/login")}
+              onClick={() => { trackLoginClick(); router.push("/login"); }}
             >
               Começar
               <ArrowRight className="h-4 w-4" />
@@ -189,7 +195,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   className="gap-2.5 shadow-lg shadow-primary/20 h-12 px-8 text-base"
-                  onClick={() => router.push("/login")}
+                  onClick={() => { trackLoginClick(); router.push("/login"); }}
                 >
                   Começar gratuitamente
                   <ArrowRight className="h-4 w-4" />
@@ -205,7 +211,7 @@ export default function LandingPage() {
                   Como funciona
                 </Button>
               </div>
-              <div className="flex items-center justify-center gap-6 pt-2 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-2 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                   Gratuito
@@ -365,7 +371,7 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 className="gap-2.5 shadow-lg shadow-primary/20 h-12 px-8 text-base"
-                onClick={() => router.push("/login")}
+                onClick={() => { trackLoginClick(); router.push("/login"); }}
               >
                 Começar gratuitamente
                 <ArrowRight className="h-4 w-4" />

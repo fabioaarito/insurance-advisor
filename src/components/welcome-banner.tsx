@@ -24,7 +24,7 @@ export function WelcomeBanner({ policies, onUploadClick }: WelcomeBannerProps) {
   if (policies.length === 0) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl gradient-brand p-6 text-white shadow-lg md:p-8 animate-fade-in">
+    <div className="relative overflow-hidden rounded-2xl gradient-brand p-5 text-white shadow-lg sm:p-6 md:p-8 animate-fade-in">
       <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10" />
       <div className="absolute -bottom-4 -right-4 h-20 w-20 rounded-full bg-white/5" />
 
