@@ -13,31 +13,91 @@ const insuranceSchema = z.object({
   monthlyPremium: z.number().nullable().describe("Prémio mensal em euros (número). null se não for possível extrair o valor."),
   annualPremium: z.number().nullable().describe("Prémio anual em euros (número). null se não for possível extrair o valor."),
   currency: z.string().default("EUR"),
-  coverages: z.array(z.string()).describe("Lista das coberturas principais mencionadas no documento"),
-  exclusions: z.array(z.string()).describe("Lista das exclusões principais mencionadas no documento"),
+  coverages: z.array(z.string()).describe("Lista das coberturas principais mencionadas no documento. Cada item deve ser uma cobertura distinta (ex: Internamento Hospitalar, Consultas, Doenças Graves, etc.)"),
+  exclusions: z.array(z.string()).describe("Lista das exclusões e restrições mencionadas no documento. Inclui períodos de carência, procedimentos com espera alargada, limitações de idade, preexistências, e tudo o que NÃO está coberto"),
   rawText: z.string().describe("Texto completo extraído do documento"),
 });
 
-const EXTRACTION_PROMPT = `Tu és um especialista em seguros. Analisa as seguintes imagens de um documento de seguro e extrai as informações estruturadas.
+const EXTRACTION_PROMPT = `Tu és um especialista em seguros portugueses. Analisa as imagens de um documento de seguro e extrai a informação estruturada.
 
-O documento pode ser qualquer tipo de apólice ou documento de seguro: FIN, apólice, condições gerais, cartão de seguro, proposta, renovação, etc. Estás a ver imagens de cada página do documento.
+O documento pode ser: FIN, apólice, certificado, condições gerais, cartão de seguro, proposta, renovação, etc.
 
-Para cada campo:
-- insurerName: O nome completo da seguradora
-- policyType: O tipo de seguro (Auto, Vida, Habitação, Saúde, Acidentes Pessoais, Viagem, Multirriscos, etc.)
-- monthlyPremium: O prémio/mensalidade em euros. Se o documento indicar prémio anual, divide por 12. Se não conseguir encontrar o valor do prémio, retorna null.
-- annualPremium: O prémio anual em euros. Se o documento indicar prémio mensal, multiplica por 12. Se não conseguir encontrar o valor do prémio, retorna null.
-- currency: "EUR"
-- coverages: Lista de todas as coberturas incluídas no seguro
-- exclusions: Lista de todas as exclusões mencionadas no documento
-- rawText: Transcreve o texto mais relevante do documento para referência futura
+## INSTRUÇÕES POR CAMPO
 
-Regras importantes:
-- Lê cuidadosamente todo o texto visível nas imagens.
-- Se o documento não contiver informação de prémio/custo, retorna null para monthlyPremium e annualPremium. Não inventes valores.
-- Extrai a informação que conseguir, mesmo que o documento esteja incompleto.
-- Se não conseguir identificar a seguradora, usa "Desconhecida".
-- Se não conseguir identificar o tipo de seguro, usa "Geral".`;
+### insurerName
+O nome completo da seguradora. Exemplos: "Fidelidade - Companhia de Seguros, S.A.", "Allianz Portugal, S.A."
+
+### policyType
+O tipo/ramo de seguro. Exemplos: Auto, Vida, Habitação, Saúde, Acidentes Pessoais, Viagem, Multirriscos, Proteção Jurídica, etc.
+
+### monthlyPremium e annualPremium
+Procura valores de prémio, mensalidade, anuidade ou custo. Se encontrar prémio anual, divide por 12 para monthlyPremium. Se encontrar prémio mensal, multiplica por 12 para annualPremium. Se não encontrar nenhum valor, retorna null para ambos. Não inventes valores.
+
+### coverages — MUITO IMPORTANTE
+Este é o campo mais importante. Deves extrair TODAS as coberturas do documento.
+
+O documento pode ter coberturas em vários formatos:
+
+1. **TABELAS DE COBERTURAS**: Muitos documentos de seguro apresentam as coberturas em tabelas com colunas como "Coberturas", "Capitais Seguros", "Reembolso", etc. Cada linha da tabela é uma cobertura. Lê TODAS as linhas da tabela.
+
+2. **LISTAGENS SIMPLES**: Podem aparecer como lista com bullet points ou numerada.
+
+3. **SEÇÕES DE TEXTO**: Podem estar descritas em parágrafos.
+
+Para documentos de SAÚDE (como Multicare, Médis, etc.), procura especificamente por:
+- Internamento Hospitalar
+- Cirurgia
+- Consultas, Exames e Tratamentos (Ambulatório)
+- Psiquiatria, Psicologia
+- Medicina Física e de Reabilitação / Fisioterapia
+- Estomatologia e Medicina Dentária
+- Doenças Graves
+- Medicina Preventiva
+- Assistência Domiciliária
+- Assistência Clínica em Viagem
+- Medicina Online
+- Ortopedia / Próteses e Órtoses
+- Qualquer outra cobertura mencionada
+
+Cada cobertura deve ser um item distinto na lista. Inclui o nome da cobertura e, se disponível, o capital seguro ou limite (ex: "Internamento Hospitalar — Capital: 100.000€").
+
+### exclusões — MUITO IMPORTANTE
+Deves extrair TODAS as exclusões, restrições e limitações do documento.
+
+Procura nas seguintes seções:
+- "Exclusões" / "Exclusão" / "O que não está seguro" / "Exclusões e Limitações"
+- "Períodos de Carência" — cada período de carência é uma exclusão temporária
+- "Condições Especiais" — podem conter limitações específicas
+- "Condições Gerais" — podem conter exclusões gerais
+- "Preexistências" — condições pré-existentes não cobertas
+- Limitações de idade
+- Franquias (valor mínimo que o cliente paga)
+- Procedimentos com período de carência alargado (ex: 360 dias)
+
+Para documentos de SAÚDE, procura especificamente por:
+- Períodos de carência (180 dias, 360 dias, etc.)
+- Procedimentos com carência especial (facoemulsificação, cirurgia de varizes, etc.)
+- Preexistências
+- O que NÃO está coberto em cada condição especial
+- Limitações de idade para coberturas
+- Franquias e comparticipações
+
+Cada exclusão deve ser um item distinto. Exemplos:
+- "Internamento Hospitalar: Período de carência de 180 dias"
+- "Facoemulsificação: Período de carência de 360 dias"
+- "Cobertura de Doenças Graves cessa aos 70 anos"
+- "Preexistências não cobertas nos primeiros 360 dias"
+
+### rawText
+Transcreve o texto mais relevante do documento (coberturas, exclusões, prémio) para referência futura.
+
+## REGRAS IMPORTANTES
+- Lê TODO o texto visível nas imagens, página por página.
+- Se o documento tiver tabelas, extrai TODAS as linhas, não apenas as primeiras.
+- Não inventes valores. Se não encontrares, usa null.
+- Se não souberes identificar a seguradora, usa "Desconhecida".
+- Se não souberes identificar o tipo, usa "Geral".
+- Prioriza a completude: é melhor extrair muitas coberturas/exclusões do que poucas.`;
 
 export async function uploadAndExtractInsurance(
   userId: string,
@@ -65,6 +125,7 @@ export async function uploadAndExtractInsurance(
     const { object: extracted } = await generateObject({
       model: google("gemini-3.1-pro-preview"),
       schema: insuranceSchema,
+      instructions: "Tu és um sistema de extração de dados de seguros. A tua tarefa é extrair TODAS as coberturas e exclusões de documentos de seguros portugueses, mesmo que estejam em tabelas complexas ou em texto denso de condições gerais. Nunca retornes listas vazias se o documento contiver coberturas ou exclusões.",
       messages: [
         {
           role: "user",

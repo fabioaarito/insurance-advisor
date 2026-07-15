@@ -9,7 +9,7 @@ async function ensurePDFJS() {
   initialized = true;
 }
 
-const MAX_PAGES = 10;
+const MAX_PAGES = 15;
 
 export async function convertPdfToImages(
   pdfBuffer: ArrayBuffer
@@ -27,7 +27,7 @@ export async function convertPdfToImages(
     const renderData = new Uint8Array(pdfBuffer.slice(0));
     const dataUrl = await renderPageAsImage(renderData, i, {
       canvasImport: () => import("@napi-rs/canvas"),
-      scale: 2,
+      scale: 3,
       toDataURL: true,
     });
     images.push({ dataUrl, pageIndex: i - 1 });
