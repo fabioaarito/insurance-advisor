@@ -53,7 +53,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-8 px-4 py-8 md:px-6 overflow-hidden">
+    <div className="container mx-auto space-y-8 px-4 py-8 md:px-6 overflow-x-hidden">
       <div className="flex items-center justify-between animate-fade-in">
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
@@ -86,7 +86,7 @@ export default function DashboardPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {policies.map((policy, i) => (
-                <div key={policy.id} style={{ animationDelay: `${i * 80}ms` }} className="animate-fade-in-up">
+                <div key={policy.id} style={{ animationDelay: `${i * 80}ms` }} className="animate-fade-in-up min-w-0">
                   <InsuranceCard policy={policy} />
                 </div>
               ))}

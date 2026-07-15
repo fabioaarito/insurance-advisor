@@ -69,42 +69,42 @@ export function InsuranceCard({ policy }: InsuranceCardProps) {
   const hasPremium = policy.monthlyPremium != null;
 
   return (
-    <Link href={`/dashboard/insurance/${policy.id}`}>
+    <Link href={`/dashboard/insurance/${policy.id}`} className="block min-w-0">
       <Card className="group cursor-pointer transition-all duration-200 shadow-card hover:shadow-card-hover hover:border-primary/20 hover:-translate-y-0.5">
         <CardContent className="p-5">
           <div className="space-y-4">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3.5">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-3.5 min-w-0">
                 <PolicyTypeIcon type={policy.policyType} />
-                <div>
-                  <h3 className="font-semibold text-base leading-tight">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-base leading-tight truncate">
                     {policy.insurerName}
                   </h3>
-                  <p className="text-sm text-muted-foreground mt-0.5">
+                  <p className="text-sm text-muted-foreground mt-0.5 truncate">
                     {policy.policyType}
                   </p>
                 </div>
               </div>
-              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0.5" />
+              <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 transition-all duration-200 group-hover:opacity-100 group-hover:translate-x-0.5 shrink-0" />
             </div>
 
             <div className="flex items-end justify-between gap-2">
               {hasPremium ? (
                 <div className="min-w-0">
-                  <div className="flex items-baseline">
+                  <div className="flex items-baseline min-w-0">
                     <span className="text-2xl font-bold tracking-tight sm:text-3xl truncate">
                       {policy.monthlyPremium!.toFixed(2)}
                     </span>
-                    <span className="text-lg font-semibold text-muted-foreground ml-1">€</span>
+                    <span className="text-lg font-semibold text-muted-foreground ml-1 shrink-0">€</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">por mês</p>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <CircleDollarSign className="h-5 w-5" />
-                  <div>
-                    <p className="text-sm font-medium">Prémio não definido</p>
-                    <p className="text-xs">Clica para adicionar</p>
+                <div className="flex items-center gap-2 text-muted-foreground min-w-0">
+                  <CircleDollarSign className="h-5 w-5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">Prémio não definido</p>
+                    <p className="text-xs truncate">Clica para adicionar</p>
                   </div>
                 </div>
               )}
@@ -127,13 +127,13 @@ export function InsuranceCard({ policy }: InsuranceCardProps) {
                     <Badge
                       key={coverage}
                       variant="secondary"
-                      className="text-xs font-normal break-words"
+                      className="!h-auto !whitespace-normal !max-w-full text-xs font-normal"
                     >
                       {coverage}
                     </Badge>
                   ))}
                   {policy.coverages.length > 3 && (
-                    <Badge variant="outline" className="text-xs font-normal">
+                    <Badge variant="outline" className="!h-auto text-xs font-normal">
                       +{policy.coverages.length - 3} mais
                     </Badge>
                   )}

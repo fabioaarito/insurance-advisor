@@ -128,6 +128,7 @@ export async function POST(req: Request) {
             content: userContent,
             timestamp: now,
           });
+        const assistantTime = new Date(Date.now() + 1).toISOString();
         await adminDb
           .collection("users")
           .doc(userId)
@@ -137,7 +138,7 @@ export async function POST(req: Request) {
             policyId: policyId || null,
             role: "assistant",
             content: text,
-            timestamp: now,
+            timestamp: assistantTime,
           });
       } catch (error) {
         console.error("Error saving chat messages:", error);

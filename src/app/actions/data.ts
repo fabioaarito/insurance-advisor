@@ -55,15 +55,14 @@ export async function getChatMessages(
   }
 
   const snapshot = await query.get();
-  const sorted = snapshot.docs
-    .sort((a, b) => {
-      const tsA = a.data().timestamp as string;
-      const tsB = b.data().timestamp as string;
-      return tsB.localeCompare(tsA);
-    });
+  const docs = snapshot.docs.sort((a, b) => {
+    const tA = new Date(a.data().timestamp as string).getTime();
+    const tB = new Date(b.data().timestamp as string).getTime();
+    return tA - tB;
+  });
 
-  const hasMore = sorted.length > limit;
-  const messages = sorted.slice(0, limit).reverse().map((doc) => ({
+  const hasMore = docs.length > limit;
+  const messages = docs.slice(-limit).map((doc) => ({
     id: doc.id,
     ...doc.data(),
   })) as Array<{ id: string; role: string; content: string; timestamp: string }>;

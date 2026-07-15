@@ -199,7 +199,7 @@ export default function InsuranceDetailPage() {
   const hasPremium = policy.monthlyPremium != null;
 
   return (
-    <div className="container mx-auto space-y-6 px-4 py-8 md:px-6 animate-fade-in overflow-x-hidden">
+    <div className="container mx-auto space-y-6 px-4 py-8 md:px-6 animate-fade-in overflow-hidden">
       <div className="flex items-center gap-3 sm:gap-4">
         <Button
           variant="ghost"
@@ -217,7 +217,7 @@ export default function InsuranceDetailPage() {
             <h1 className="text-xl font-bold tracking-tight sm:text-2xl md:text-3xl truncate">
               {policy.insurerName}
             </h1>
-            <p className="text-sm text-muted-foreground sm:text-base">{policy.policyType}</p>
+            <p className="text-sm text-muted-foreground sm:text-base truncate">{policy.policyType}</p>
           </div>
         </div>
         <Button
@@ -230,8 +230,8 @@ export default function InsuranceDetailPage() {
         </Button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-5">
-        <div className="md:col-span-2 space-y-6">
+      <div className="grid gap-6 md:grid-cols-5 overflow-hidden">
+        <div className="md:col-span-2 space-y-6 min-w-0">
           <Card className="shadow-card overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
@@ -247,7 +247,7 @@ export default function InsuranceDetailPage() {
               <Separator />
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm text-muted-foreground shrink-0">Tipo</span>
-                <Badge variant="secondary" className="shrink-0">{policy.policyType}</Badge>
+                <Badge variant="secondary" className="shrink-0 max-w-full truncate">{policy.policyType}</Badge>
               </div>
               <Separator />
               <div className="rounded-xl gradient-brand-subtle p-4 overflow-hidden">
@@ -311,8 +311,8 @@ export default function InsuranceDetailPage() {
                     </div>
                   </div>
                 ) : hasPremium ? (
-                  <div className="text-center">
-                    <p className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  <div className="text-center min-w-0">
+                    <p className="text-2xl font-bold tracking-tight sm:text-3xl truncate">
                       {policy.monthlyPremium!.toFixed(2)} <span className="text-base text-muted-foreground sm:text-lg">€</span>
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -362,7 +362,7 @@ export default function InsuranceDetailPage() {
           </Card>
         </div>
 
-        <div className="md:col-span-3 space-y-6">
+        <div className="md:col-span-3 space-y-6 min-w-0">
           <Card className="shadow-card overflow-hidden">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
@@ -384,7 +384,7 @@ export default function InsuranceDetailPage() {
                     <Badge
                       key={coverage}
                       variant="outline"
-                      className="border-emerald-200 bg-emerald-50 text-emerald-700 font-normal text-sm py-1.5 px-3 max-w-full whitespace-normal h-auto overflow-visible"
+                      className="border-emerald-200 bg-emerald-50 text-emerald-700 font-normal text-sm py-1.5 px-3 max-w-full !whitespace-normal !h-auto"
                     >
                       <CheckCircle2 className="h-3 w-3 mr-1.5 shrink-0" />
                       <span className="break-words">{coverage}</span>
@@ -420,7 +420,7 @@ export default function InsuranceDetailPage() {
                     <Badge
                       key={exclusion}
                       variant="outline"
-                      className="border-red-200 bg-red-50 text-red-700 font-normal text-sm py-1.5 px-3 max-w-full whitespace-normal h-auto overflow-visible"
+                      className="border-red-200 bg-red-50 text-red-700 font-normal text-sm py-1.5 px-3 max-w-full !whitespace-normal !h-auto"
                     >
                       <XCircle className="h-3 w-3 mr-1.5 shrink-0" />
                       <span className="break-words">{exclusion}</span>
