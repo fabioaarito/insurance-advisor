@@ -12,7 +12,6 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle2,
-  Sparkles,
   ChevronRight,
   Lock,
   Zap,
@@ -29,9 +28,9 @@ function trackLoginClick() {
 const features = [
   {
     icon: FileText,
-    title: "Carrega FINs em PDF",
+    title: "Carrega apólices em PDF",
     description:
-      "Arrasta ou seleciona as tuas Fichas de Informação Normalizada. A IA extrai seguradora, coberturas, exclusões e custos automaticamente.",
+      "Arrasta ou seleciona os teus documentos de seguro. A IA extrai seguradora, coberturas, exclusões e custos automaticamente.",
     color: "bg-blue-100 text-blue-600",
   },
   {
@@ -60,8 +59,8 @@ const features = [
 const steps = [
   {
     number: 1,
-    title: "Carrega a tua FIN",
-    description: "Faz upload do PDF da Ficha de Informação Normalizada",
+    title: "Carrega a tua apólice",
+    description: "Faz upload do teu documento de seguro em formato PDF",
     icon: FileText,
   },
   {
@@ -100,7 +99,17 @@ const faqs = [
   {
     question: "Que tipo de documentos posso carregar?",
     answer:
-      "Aceitamos Fichas de Informação Normalizada (FIN) em formato PDF. Estes são os documentos que as seguradoras portuguesas fornecem com os detalhes de cada apólice.",
+      "Podes carregar documentos de seguro em formato PDF, como apólices, condições gerais, cartões de seguro ou qualquer documento que tenhas recebido da tua seguradora. Basta o ficheiro ser um PDF com pelo menos uma página.",
+  },
+  {
+    question: "Como são protegidos os meus dados?",
+    answer:
+      "Os teus documentos e dados pessoais são guardados de forma segura na tua conta. Apenas tu tens acesso aos teus seguros — nem a nossa equipa nem qualquer outra pessoa consegue ver as tuas informações. Os dados são armazenados em servidores seguros com encriptação, e nunca são partilhados com terceiros.",
+  },
+  {
+    question: "Os meus dados são partilhados com seguradoras ou outros serviços?",
+    answer:
+      "Não. Os teus dados são usados exclusivamente para te ajudar a gerir os teus seguros. Nunca partilhamos, vendemos ou enviamos as tuas informações para seguradoras, anunciantes ou qualquer outro serviço. Tudo fica guardado apenas na tua conta pessoal.",
   },
   {
     question: "A IA substitui um corretor de seguros?",
@@ -108,9 +117,9 @@ const faqs = [
       "Não. O Insurance Advisor é uma ferramenta de apoio à decisão. Fornece informações claras sobre os teus seguros existentes, mas não substitui o aconselhamento profissional de um corretor.",
   },
   {
-    question: "Os meus dados estão seguros?",
+    question: "Preciso de saber algo sobre seguros para usar?",
     answer:
-      "Sim. Os teus documentos e dados são armazenados de forma segura na tua conta pessoal. Ninguém além de ti tem acesso aos teus seguros.",
+      "Não precisas de ter conhecimentos técnicos. A ferramenta foi pensada para qualquer pessoa. Basta carregares o teu documento de seguro e a IA explica tudo de forma simples e clara.",
   },
   {
     question: "Quanto custa?",
@@ -178,18 +187,14 @@ export default function LandingPage() {
         <section className="gradient-hero overflow-hidden">
           <div className="container mx-auto px-4 py-20 md:px-6 md:py-32">
             <div className="mx-auto max-w-3xl space-y-8 text-center animate-fade-in-up">
-              <div className="inline-flex items-center gap-2 rounded-full border bg-white/60 px-4 py-1.5 text-sm font-medium text-muted-foreground backdrop-blur-sm">
-                <Sparkles className="h-4 w-4 text-primary" />
-                Powered by Google Gemini AI
-              </div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl leading-[1.1]">
                 O teu assistente
                 <br />
                 <span className="text-gradient-brand">pessoal de seguros</span>
               </h1>
               <p className="mx-auto max-w-xl text-lg text-muted-foreground md:text-xl leading-relaxed">
-                Carrega as tuas apólices em PDF, compreende o que tens coberto, e
-                conversa com uma IA que conhece os teus seguros melhor do que tu.
+                Tens problemas em casa ou de saúde e não usas os teus seguros?
+                Descobre como tirar partido dos teus seguros — é grátis e em menos de 1 minuto.
               </p>
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center pt-2">
                 <Button
@@ -366,7 +371,7 @@ export default function LandingPage() {
                 Começa a gerir os teus seguros hoje
               </h2>
               <p className="text-muted-foreground">
-                Carrega a tua primeira FIN em menos de 1 minuto e descobre o que a IA pode fazer por ti.
+                Carrega o teu primeiro documento de seguro em menos de 1 minuto e descobre o que a IA pode fazer por ti.
               </p>
               <Button
                 size="lg"
@@ -392,10 +397,12 @@ export default function LandingPage() {
                 Insurance Advisor
               </span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Insurance Advisor AI. Todos os
-              direitos reservados.
-            </p>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <a href="/privacidade" className="hover:text-foreground transition-colors">
+                Privacidade
+              </a>
+              <span>&copy; {new Date().getFullYear()} Insurance Advisor AI.</span>
+            </div>
           </div>
         </div>
       </footer>

@@ -116,7 +116,7 @@ export default function LoginPage() {
                   Termos de Serviço
                 </a>{" "}
                 e a{" "}
-                <a href="#" className="text-primary hover:underline">
+                <a href="/privacidade" className="text-primary hover:underline">
                   Política de Privacidade
                 </a>
                 .
